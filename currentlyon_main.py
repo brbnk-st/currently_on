@@ -2,26 +2,30 @@ import customtkinter as ctk
 import tkinter as tk
 from tkinter import ttk
 import os
+import json
 from PIL import Image
 
 
 THEME_MODE = ""
+COLORS = {"1":"#DD2222", "2":"#F0C119", "3":"#10BA00"}
 
 basedir = os.path.dirname(__file__)
+ctk.set_appearance_mode("dark")
+
 
 class TaskFrame(ctk.CTkFrame):
-    def __init__(self, master, custom_text, width = 300, height = 200):
+    def __init__(self, master, custom_text, taskid, date, urgency, width = 300, height = 200):
         super().__init__(master, width, height)
 
 
         self.text_label = ctk.CTkLabel(self, text=custom_text,
-                                       width=270, height=100, wraplength=250, fg_color="white", corner_radius=15)
+                                       width=270, height=100, wraplength=250, fg_color=COLORS[urgency], corner_radius=15)
         self.text_label.grid(column=0, row=0, columnspan=3)
 
         self.button1 = ctk.CTkCheckBox(self, text='', width=10, height=10)
         self.button1.grid(column=0, row=1)
 
-        self.spacer = ctk.CTkLabel(self, text='', width=50)
+        self.spacer = ctk.CTkLabel(self, text=f"{taskid} - {date}", width=50, font=("Swis721 Lt BT", 12), text_color="#BCBCBE")
         self.spacer.grid(column=1, row=1)
 
         self.button2 = ctk.CTkButton(self, text='', width=45, height=20)
@@ -36,10 +40,15 @@ class TasksContainer(ctk.CTkScrollableFrame):
         self.values = values
         self.frames = []
 
+
         for i, value in enumerate(self.values):
-            frame = TaskFrame(self, custom_text=value)
+            frame = TaskFrame(self, custom_text=value["text"], taskid=value["taskID"], date=value["date_created"], urgency=value["urgency"])
+
             frame.grid(column=0, row=i, padx=10, pady=(10, 0), sticky="w")
             self.frames.append(frame)
+        
+
+
 
 class CON(ctk.CTk):
     def __init__(self):
@@ -78,8 +87,8 @@ class CON(ctk.CTk):
         self.topBar_separator = ctk.CTkFrame(self, width=WINDOW_WIDTH-10, height=2, fg_color="#9E9999")
         self.topBar_separator.grid(column=0, row=0, columnspan=5, padx=0, sticky='s')
 
-        values = ["Buy Raspberry pico", "Install Arch Linux", "Repeair Laptop screen", "Complete git course", "Impedance analyzer app in C#", "Start git course"]
-        self.Alltasks_frame = TasksContainer(self, values=values, width=WINDOW_WIDTH-50, height=(WINDOW_HEIGHT*0.75)-200)
+        tasks = self.load_tasks()
+        self.Alltasks_frame = TasksContainer(self, values=tasks, width=WINDOW_WIDTH-50, height=(WINDOW_HEIGHT*0.75)-200)
         self.Alltasks_frame.grid(column=0, row=1, columnspan=5, padx=5, pady=5)
 
         self.Tasks_separator = ctk.CTkFrame(self, width=WINDOW_WIDTH-10, height=2, fg_color="#9E9999")
@@ -105,6 +114,15 @@ class CON(ctk.CTk):
                 ctk.set_appearance_mode("light")
             case "Light":
                 ctk.set_appearance_mode("dark")
+    
+    def load_tasks(self):
+        with open("currentlyon.json", 'r') as file:
+            tasks_dict = json.load(file)
+            tasks = tasks_dict["tasks"]
+        
+        tasks.sort(key=lambda x: int(x["urgency"]))
+
+        return tasks
     
 
 
