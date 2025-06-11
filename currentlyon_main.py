@@ -34,13 +34,13 @@ class TaskFrame(ctk.CTkFrame):
                                        width=270, height=100, wraplength=250, fg_color=COLORS[urgency], corner_radius=15)
         self.text_label.grid(column=0, row=0, columnspan=3)
 
-        self.button1 = ctk.CTkCheckBox(self, text='', width=10, height=10)
-        self.button1.grid(column=0, row=1)
+        # self.button1 = ctk.CTkCheckBox(self, text='', width=10, height=10)
+        # self.button1.grid(column=0, row=1)
 
         self.spacer = ctk.CTkLabel(self, text=f"{date}\n {taskid}", width=50, font=("Swis721 Lt BT", 8), text_color="#BCBCBE")
         self.spacer.grid(column=1, row=1)
 
-        self.button2 = ctk.CTkButton(self, text='Edit', width=45, height=20)
+        self.button2 = ctk.CTkButton(self, text='Cmplt', width=45, height=20, command=self.destroy)
         self.button2.grid(column=2, row=1)
  
 class TasksContainer(ctk.CTkScrollableFrame):
@@ -161,13 +161,13 @@ class CON(ctk.CTk):
         self.changeTheme_button.grid(column=3, row=0, padx=10, pady=10, sticky='e')
 
         self.topBar_separator = ctk.CTkFrame(self, width=WINDOW_WIDTH-10, height=2, fg_color="#9E9999")
-        self.topBar_separator.grid(column=0, row=0, columnspan=5, padx=0, sticky='s')
+        self.topBar_separator.grid(column=0, row=0, columnspan=5, padx=5, sticky='s')
 
         self.Alltasks_frame = TasksContainer(self, values=tasks, width=WINDOW_WIDTH-50, height=(WINDOW_HEIGHT*0.75)-200)
         self.Alltasks_frame.grid(column=0, row=1, columnspan=5, padx=5, pady=5)
 
         self.Tasks_separator = ctk.CTkFrame(self, width=WINDOW_WIDTH-10, height=2, fg_color="#9E9999")
-        self.Tasks_separator.grid(column=0, row=2, columnspan=5, padx=0, sticky='s')
+        self.Tasks_separator.grid(column=0, row=2, columnspan=5, padx=5, sticky='s')
 
         self.addtask_button = ctk.CTkButton(self, text="+ Add New Task", width=270, height=50, command=self.add_task_window)
         self.addtask_button.grid(column=0, row=3, columnspan=5, padx=10, pady=20)
@@ -211,8 +211,11 @@ class CON(ctk.CTk):
 if __name__ == "__main__":
     tasks = load_tasks()
     app = CON()
+
+
     app.iconbitmap(os.path.join(basedir, "assets\\ON.ico"))
-
-
-    
     app.mainloop()
+
+
+#TODO 
+# Add a archive of completed tasks and use a method to erase the frame from the tasks, and move it from the "tasks" in the json file to "completed".
